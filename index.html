@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Jet Simulator</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23181a20'/%3E%3Cpolygon points='32,6 37,22 58,38 58,43 37,37 37,49 46,55 46,58 32,54 18,58 18,55 27,49 27,37 6,43 6,38 27,22' fill='%23d9e1ec'/%3E%3Cpolygon points='32,16 35,26 32,30 29,26' fill='%23f2be42'/%3E%3Cpolygon points='28,54 30,61 32,55 34,61 36,54' fill='%23ffa436'/%3E%3C/svg%3E" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpolygon points='32,4 40,26 60,38 60,44 38,39 36,54 46,60 46,63 32,59 18,63 18,60 28,54 26,39 4,44 4,38 24,26' fill='%23b8c3d4' stroke='%232a3140' stroke-width='2'/%3E%3Cellipse cx='32' cy='21' rx='4' ry='8' fill='%23f2be42'/%3E%3C/svg%3E" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -45,23 +45,18 @@
     }
 
     .hud-pill {
-      background: rgba(18, 20, 26, 0.78);
-      border: 1px solid rgba(255, 240, 220, 0.16);
-      color: rgba(248, 242, 232, 0.92);
-      letter-spacing: 0.06em;
+      background: rgba(18, 20, 26, 0.82);
+      border: 1px solid rgba(255, 240, 220, 0.18);
+      color: rgba(248, 242, 232, 0.94);
+      letter-spacing: 0.05em;
       text-transform: uppercase;
-      backdrop-filter: blur(2px);
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.28);
-    }
-
-    .hud-key {
-      color: #ffd180;
-      font-weight: 700;
+      backdrop-filter: blur(3px);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.32);
     }
 
     .hud-sep {
       color: rgba(255, 255, 255, 0.28);
-      margin: 0 0.45rem;
+      margin: 0 0.4rem;
     }
 
     #reticle {
@@ -158,6 +153,63 @@
       transition: opacity 0.3s ease, transform 0.3s ease;
     }
 
+    #minimap-wrap {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      z-index: 20;
+      width: 112px;
+      height: 112px;
+      border-radius: 0.65rem;
+      overflow: hidden;
+      background: rgba(16, 22, 32, 0.86);
+      border: 1.5px solid rgba(255, 232, 198, 0.3);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.38);
+      pointer-events: none;
+    }
+
+    @media (min-width: 640px) {
+      #minimap-wrap {
+        width: 136px;
+        height: 136px;
+      }
+    }
+
+    #minimap-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      image-rendering: pixelated;
+    }
+
+    .kbd-badge {
+      display: inline-block;
+      padding: 0.08rem 0.34rem;
+      margin-right: 0.24rem;
+      border-radius: 0.25rem;
+      background: rgba(255, 209, 128, 0.18);
+      border: 1px solid rgba(255, 209, 128, 0.42);
+      color: #ffd180;
+      font-weight: 700;
+      font-size: 0.62rem;
+      line-height: 1.2;
+    }
+
+    .ctrl-item {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.14rem 0.42rem;
+      border-radius: 0.35rem;
+      background: rgba(255, 255, 255, 0.05);
+      transition: background 0.12s ease, border-color 0.12s ease;
+      border: 1px solid transparent;
+    }
+
+    .ctrl-item.active {
+      background: rgba(255, 209, 128, 0.24);
+      border-color: rgba(255, 209, 128, 0.58);
+    }
+
     @media (hover: hover) and (pointer: fine) {
       #touch-controls {
         display: none !important;
@@ -167,7 +219,7 @@
 </head>
 <body>
   <div id="game-container">
-    <!-- Custom Flight Steering Reticle (Locked Center + Stick Deflection Pip) -->
+    <!-- Custom Flight Steering Reticle -->
     <div id="reticle" style="left: 50%; top: 50%;">
       <svg viewBox="0 0 24 24" class="w-full h-full opacity-85">
         <circle cx="12" cy="12" r="9" fill="none" stroke="#fff4e0" stroke-width="1.2" stroke-dasharray="3 3" />
@@ -206,10 +258,10 @@
       </svg>
     </div>
 
-    <!-- Subtle Damage Vignette Flash -->
+    <!-- Damage Vignette Flash -->
     <div id="hit-flash"></div>
 
-    <!-- Crisp Impact Hitmarker -->
+    <!-- Impact Hitmarker -->
     <div id="hitmarker" style="left: 50%; top: 50%;">
       <svg viewBox="0 0 28 28" class="w-full h-full">
         <line x1="4" y1="4" x2="10" y2="10" stroke="#ffd180" stroke-width="2.2" stroke-linecap="round" />
@@ -219,7 +271,7 @@
       </svg>
     </div>
 
-    <!-- Minimal Cockpit HUD Overlay (active when pressing SPACE) -->
+    <!-- Cockpit HUD Overlay (active when pressing SPACE) -->
     <div id="cockpit-hud">
       <svg class="w-full h-full" viewBox="0 0 1000 600" preserveAspectRatio="none">
         <path d="M 0,600 L 135,245 L 255,95 L 745,95 L 865,245 L 1000,600" fill="none" stroke="rgba(24,28,36,0.72)" stroke-width="14" />
@@ -235,46 +287,162 @@
       </div>
     </div>
 
-    <!-- Top-Left Combat Status Pill -->
-    <div class="pointer-events-none absolute top-3 left-3 z-20 flex items-center gap-2">
-      <div class="hud-pill px-2.5 py-1 rounded text-[10px] sm:text-[11px] font-bold flex items-center">
+    <!-- Top-Left Combat Status Pill & Quick Pause/Guide Buttons -->
+    <div class="absolute top-3 left-3 z-20 flex flex-wrap items-center gap-1.5 max-w-[calc(100vw-145px)]">
+      <div class="hud-pill px-2.5 py-1 rounded text-[10px] sm:text-[11px] font-bold flex items-center pointer-events-none">
         <span>KILLS: <span id="kill-count" class="text-amber-300">0</span></span>
         <span class="hud-sep">·</span>
         <span>CITIES: <span id="bldg-count" class="text-orange-300">0</span></span>
         <span class="hud-sep">·</span>
         <span>HULL: <span id="hull-value" class="text-emerald-300">100%</span></span>
       </div>
+      <button id="btn-pause-top" type="button" class="hud-pill px-2.5 py-1 rounded text-[10px] sm:text-[11px] font-bold hover:bg-amber-400/20 active:bg-amber-400/30 cursor-pointer">
+        PAUSE <span class="text-amber-300">[P]</span>
+      </button>
+      <button id="btn-help-top" type="button" class="hud-pill px-2.5 py-1 rounded text-[10px] sm:text-[11px] font-bold hover:bg-amber-400/20 active:bg-amber-400/30 cursor-pointer">
+        GUIDE <span class="text-amber-300">[H]</span>
+      </button>
+    </div>
+
+    <!-- Top-Right Tactical Radar Mini-Map -->
+    <div id="minimap-wrap">
+      <canvas id="minimap-canvas" width="96" height="96"></canvas>
+      <div class="absolute top-1 left-1.5 text-[8px] font-bold tracking-widest text-amber-200/90 drop-shadow">RADAR</div>
+      <div id="minimap-alt" class="absolute bottom-1 right-1.5 text-[8px] font-bold tracking-wider text-emerald-200/95 drop-shadow">ALT 1580</div>
+    </div>
+
+    <!-- Interactive Quick Flight Tutorial Checklist -->
+    <div id="tutorial-checklist" class="absolute top-14 left-3 z-20 w-64 sm:w-72 hud-pill p-2.5 rounded-lg border-amber-300/30 text-[10px]">
+      <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-white/10">
+        <span class="font-bold text-amber-300 tracking-wider">FLIGHT BRIEFING</span>
+        <button id="btn-close-checklist" type="button" class="text-white/70 hover:text-white px-1.5 py-0.5 rounded bg-white/10 text-[9px] cursor-pointer">SKIP</button>
+      </div>
+      <ul class="space-y-1 text-[9.5px] text-amber-50/90">
+        <li id="tut-step-steer" class="flex items-center gap-1.5">
+          <span class="tut-box text-amber-300">[ ]</span>
+          <span>Move mouse/trackpad or <b>WASD</b> to steer</span>
+        </li>
+        <li id="tut-step-shoot" class="flex items-center gap-1.5">
+          <span class="tut-box text-amber-300">[ ]</span>
+          <span><b>Left Click / C</b> to fire 20mm cannons</span>
+        </li>
+        <li id="tut-step-missile" class="flex items-center gap-1.5">
+          <span class="tut-box text-amber-300">[ ]</span>
+          <span><b>E / Right Click</b> to launch homing missile</span>
+        </li>
+        <li id="tut-step-roll" class="flex items-center gap-1.5">
+          <span class="tut-box text-amber-300">[ ]</span>
+          <span>Hold <b>Shift</b> to boost · Hold <b>R</b> to roll</span>
+        </li>
+      </ul>
     </div>
 
     <!-- Radio & Combat Event Banner -->
-    <div id="radio-alert" class="pointer-events-none absolute top-3 left-1/2 -translate-x-1/2 z-20 opacity-0 -translate-y-2">
+    <div id="radio-alert" class="pointer-events-none absolute top-14 left-1/2 -translate-x-1/2 z-20 opacity-0 -translate-y-2">
       <div class="hud-pill px-3.5 py-1 rounded border-amber-300/40 text-[10px] sm:text-xs font-bold tracking-widest text-amber-200 flex items-center gap-2">
         <span id="radio-dot" class="inline-block w-2 h-2 rounded-full bg-amber-300 animate-ping"></span>
         <span id="radio-alert-text">SQUADRON INBOUND</span>
       </div>
     </div>
 
-    <!-- Bottom Center Control Bar (Chromebook & Desktop Friendly) -->
-    <div class="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 z-20 w-max max-w-[96vw]">
-      <div class="hud-pill px-3 py-1 rounded text-[9px] sm:text-[10px] whitespace-nowrap overflow-x-auto flex items-center justify-center">
-        <span><span class="hud-key">TRACKPAD / WASD</span> STEER</span>
-        <span class="hud-sep">·</span>
-        <span><span class="hud-key">CLICK / C</span> GUNS</span>
-        <span class="hud-sep">·</span>
-        <span><span class="hud-key">E / R-CLICK</span> MISSILE <span id="missile-count" class="text-amber-300 font-bold">[6]</span></span>
-        <span class="hud-sep">·</span>
-        <span><span class="hud-key">HOLD R</span> ROLL</span>
-        <span class="hud-sep">·</span>
-        <span><span class="hud-key">SHIFT</span> BOOST</span>
-        <span class="hud-sep">·</span>
-        <span><span class="hud-key">SPACE</span> COCKPIT</span>
-        <span class="hud-sep">·</span>
-        <span><span class="hud-key">L</span> <span id="cursor-lock-label">LOCK CURSOR</span></span>
+    <!-- Pause Screen Overlay -->
+    <div id="pause-modal" style="display: none;" class="fixed inset-0 z-40 bg-black/65 backdrop-blur-sm items-center justify-center p-4">
+      <div class="hud-pill w-full max-w-md rounded-xl p-5 sm:p-6 border-amber-300/35 text-center space-y-4">
+        <div>
+          <div class="text-[10px] tracking-[0.2em] text-amber-300/80 mb-1">FLIGHT DECK</div>
+          <h2 class="text-xl sm:text-2xl font-bold tracking-widest text-white">SIMULATION PAUSED</h2>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 py-2 border-y border-white/10 text-[10px]">
+          <div>
+            <div class="text-white/50">BANDITS</div>
+            <div id="pause-kills" class="text-sm font-bold text-amber-300">0</div>
+          </div>
+          <div>
+            <div class="text-white/50">STRUCTURES</div>
+            <div id="pause-cities" class="text-sm font-bold text-orange-300">0</div>
+          </div>
+          <div>
+            <div class="text-white/50">AIRFRAME</div>
+            <div id="pause-hull" class="text-sm font-bold text-emerald-300">100%</div>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <button id="btn-resume" type="button" class="w-full py-2.5 px-4 rounded-lg bg-amber-400/25 hover:bg-amber-400/35 border border-amber-300/50 text-amber-200 font-bold text-xs tracking-widest cursor-pointer">
+            RESUME FLIGHT [P / ESC]
+          </button>
+          <button id="btn-open-tutorial" type="button" class="w-full py-2 px-4 rounded-lg bg-white/10 hover:bg-white/15 border border-white/15 text-white font-bold text-xs tracking-widest cursor-pointer">
+            FLIGHT & COMBAT TUTORIAL [H]
+          </button>
+          <div class="grid grid-cols-2 gap-2">
+            <button id="btn-toggle-music" type="button" class="py-2 px-3 rounded-lg bg-white/10 hover:bg-white/15 border border-white/15 text-[11px] font-bold text-emerald-200 cursor-pointer">
+              MUSIC: ON
+            </button>
+            <button id="btn-toggle-sfx" type="button" class="py-2 px-3 rounded-lg bg-white/10 hover:bg-white/15 border border-white/15 text-[11px] font-bold text-emerald-200 cursor-pointer">
+              SFX: ON
+            </button>
+          </div>
+          <button id="btn-redeploy" type="button" class="w-full py-2 px-4 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 border border-rose-400/35 text-rose-200 font-bold text-xs tracking-widest cursor-pointer">
+            REDEPLOY AT ALTITUDE
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Full Tutorial / Pilot Handbook Modal -->
+    <div id="tutorial-modal" style="display: none;" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm items-center justify-center p-4">
+      <div class="hud-pill w-full max-w-lg rounded-xl p-5 sm:p-6 border-amber-300/35 space-y-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between border-b border-white/15 pb-2.5">
+          <div>
+            <div class="text-[10px] tracking-[0.18em] text-amber-300">PILOT HANDBOOK</div>
+            <h2 class="text-lg sm:text-xl font-bold text-white">HOW TO FLY & DOGFIGHT</h2>
+          </div>
+          <button id="btn-close-tutorial" type="button" class="px-2.5 py-1 rounded bg-white/10 hover:bg-white/20 text-xs font-bold text-amber-200 cursor-pointer">
+            CLOSE [H]
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px] normal-case tracking-normal">
+          <div class="p-2.5 rounded-lg bg-white/5 border border-white/10">
+            <div class="font-bold text-amber-300 uppercase text-[10px] mb-1">1. Flight & Steering</div>
+            <p class="text-white/85 leading-relaxed">Move your mouse/trackpad (or use <b>WASD / Arrow Keys</b>) to pitch and bank. Press <b>L</b> anytime to lock/unlock the cursor at center screen.</p>
+          </div>
+          <div class="p-2.5 rounded-lg bg-white/5 border border-white/10">
+            <div class="font-bold text-amber-300 uppercase text-[10px] mb-1">2. Guns & Homing Missiles</div>
+            <p class="text-white/85 leading-relaxed">Spam-click or hold <b>Left Click / C</b> for rapid 20mm cannons (aim near the green lead circle). Press <b>E / Right Click</b> when a red <b>LOCK</b> diamond appears to launch homing missiles.</p>
+          </div>
+          <div class="p-2.5 rounded-lg bg-white/5 border border-white/10">
+            <div class="font-bold text-amber-300 uppercase text-[10px] mb-1">3. Afterburner & Barrel Roll</div>
+            <p class="text-white/85 leading-relaxed">Hold <b>Shift</b> to ignite twin afterburners. Hold <b>R</b> to execute continuous barrel rolls and evade incoming enemy fire.</p>
+          </div>
+          <div class="p-2.5 rounded-lg bg-white/5 border border-white/10">
+            <div class="font-bold text-amber-300 uppercase text-[10px] mb-1">4. Hazards & Radar</div>
+            <p class="text-white/85 leading-relaxed">Watch your altitude! Crashing into water, terrain, or city skyscrapers destroys your jet. Use the top-right <b>Radar</b> to spot red bandit triangles and orange city targets.</p>
+          </div>
+        </div>
+
+        <button id="btn-start-flying" type="button" class="w-full py-2.5 px-4 rounded-lg bg-amber-400/25 hover:bg-amber-400/35 border border-amber-300/50 text-amber-200 font-bold text-xs tracking-widest cursor-pointer">
+          GOT IT — LAUNCH FLIGHT
+        </button>
+      </div>
+    </div>
+
+    <!-- Responsive Bottom Control GUI -->
+    <div id="bottom-control-gui" class="pointer-events-none absolute bottom-2.5 left-1/2 -translate-x-1/2 z-20 w-[96vw] max-w-4xl">
+      <div class="hud-pill px-2.5 py-1.5 rounded-lg text-[9.5px] sm:text-[10px] flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+        <span id="gui-steer" class="ctrl-item"><kbd class="kbd-badge">MOUSE / WASD</kbd>STEER</span>
+        <span id="gui-guns" class="ctrl-item"><kbd class="kbd-badge">CLICK / C</kbd>GUNS</span>
+        <span id="gui-missile" class="ctrl-item"><kbd class="kbd-badge">E / R-CLICK</kbd>MISSILE <span id="missile-count" class="text-amber-300 font-bold ml-1">[8]</span></span>
+        <span id="gui-roll" class="ctrl-item"><kbd class="kbd-badge">HOLD R</kbd>ROLL</span>
+        <span id="gui-boost" class="ctrl-item"><kbd class="kbd-badge">SHIFT</kbd>BOOST</span>
+        <span id="gui-cockpit" class="ctrl-item"><kbd class="kbd-badge">SPACE</kbd>COCKPIT</span>
+        <span id="gui-cursor" class="ctrl-item"><kbd class="kbd-badge">L</kbd><span id="cursor-lock-label">LOCK</span></span>
       </div>
     </div>
 
     <!-- Touch Controls (Mobile / Tablet only) -->
-    <div id="touch-controls" class="fixed bottom-12 inset-x-3 z-20 flex justify-between items-end pointer-events-none">
+    <div id="touch-controls" class="fixed bottom-16 inset-x-3 z-20 flex justify-between items-end pointer-events-none">
       <div class="text-[10px] text-amber-100/80 bg-black/50 px-2.5 py-1 rounded pointer-events-none">
         DRAG SCREEN TO STEER
       </div>
@@ -296,7 +464,15 @@
       // 1. RENDERER, BRANCHLESS 4x4 BAYER DITHER POST-PROCESSOR & SCENE LIGHTING
       // -----------------------------------------------------------------------
       const container = document.getElementById('game-container');
-      let pixelScale = 2.4;
+
+      function computeIdealPixelScale() {
+        const minDim = Math.min(window.innerWidth, window.innerHeight);
+        if (minDim < 580) return 1.5;
+        if (minDim < 840) return 1.85;
+        return 2.25;
+      }
+
+      let pixelScale = computeIdealPixelScale();
 
       const renderer = new THREE.WebGLRenderer({
         antialias: false,
@@ -318,8 +494,8 @@
         3800
       );
 
-      let rtWidth = Math.max(400, Math.floor(window.innerWidth / pixelScale));
-      let rtHeight = Math.max(225, Math.floor(window.innerHeight / pixelScale));
+      let rtWidth = Math.max(320, Math.floor(window.innerWidth / pixelScale));
+      let rtHeight = Math.max(180, Math.floor(window.innerHeight / pixelScale));
 
       const renderTarget = new THREE.WebGLRenderTarget(rtWidth, rtHeight, {
         minFilter: THREE.NearestFilter,
@@ -346,7 +522,7 @@
           uniform vec2 uResolution;
           varying vec2 vUv;
 
-          // Branchless 4x4 Bayer matrix lookup for fast Chromebook / integrated GPU performance
+          // Branchless 4x4 Bayer ordered dithering matrix for crisp 8-bit stipple
           float bayer4x4(vec2 pos) {
             vec2 p = mod(floor(pos), 4.0);
             mat4 bayer = mat4(
@@ -368,8 +544,8 @@
             vec4 texel = texture2D(uSceneTex, vUv);
             vec2 pixelCoord = floor(vUv * uResolution);
             float threshold = bayer4x4(pixelCoord) - 0.5;
-            float levels = 22.0;
-            vec3 dithered = floor((texel.rgb + threshold * (0.85 / levels)) * levels + 0.5) / levels;
+            float levels = 11.0;
+            vec3 dithered = floor((texel.rgb + threshold * (1.22 / levels)) * levels + 0.5) / levels;
             gl_FragColor = vec4(clamp(dithered, 0.0, 1.0), 1.0);
           }
         `,
@@ -382,7 +558,7 @@
       const postQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), ditherMaterial);
       postScene.add(postQuad);
 
-      // Warm Golden-Hour Sunset Lighting matching IMG_1165.PNG
+      // Warm Golden-Hour Sunset Lighting
       const hemiLight = new THREE.HemisphereLight(0xffe0c4, 0x3b6e8c, 0.92);
       scene.add(hemiLight);
 
@@ -440,12 +616,10 @@
             vec3 col = mix(horizonCol, midSkyCol, smoothstep(0.0, 0.28, h));
             col = mix(col, zenithCol, smoothstep(0.22, 0.82, h));
 
-            // Warm sun disc glow
             vec3 sunDir = normalize(vec3(0.45, 0.24, -0.86));
             float sunAmt = max(dot(dir, sunDir), 0.0);
             col += vec3(1.0, 0.86, 0.62) * pow(sunAmt, 14.0) * 0.38;
 
-            // Stylized swept sunset cloud bands
             if (dir.y > 0.03) {
               vec2 skyUv = dir.xz / (dir.y + 0.18);
               vec2 streakUv = vec2(skyUv.x * 1.4 + skyUv.y * 0.65 + uTime * 0.008, skyUv.y * 3.1 - uTime * 0.004);
@@ -510,11 +684,9 @@
             vec3 col = mix(deepCobalt, midAzure, smoothstep(0.26, 0.54, shoal));
             col = mix(col, reefTurq, smoothstep(0.52, 0.74, shoal));
 
-            // Subtle wave ripple bands
             float wave = sin(p.x * 0.045 + p.y * 0.032 + uTime * 1.4 + n2 * 4.0) * 0.5 + 0.5;
             col += vec3(0.03, 0.05, 0.06) * wave;
 
-            // Crisp pixel-art water sparkles matching IMG_1165.PNG
             vec2 cell = floor(p * 0.16 + vec2(uTime * 0.45, -uTime * 0.3));
             float sparkle = step(0.986, hash(cell));
             col = mix(col, vec3(0.95, 0.98, 1.0), sparkle * 0.75);
@@ -571,10 +743,10 @@
           return null;
         }
         const seed = hash2(cx * 23 + 7, cz * 41 - 13);
-        if (seed > 0.42) {
+        if (seed > 0.46) {
           return {
-            x: cx * 340 + (hash2(cx, cz * 9) - 0.5) * 75,
-            z: cz * 340 + (hash2(cx * 5, cz) - 0.5) * 75,
+            x: cx * 340 + (hash2(cx, cz * 9) - 0.5) * 65,
+            z: cz * 340 + (hash2(cx * 5, cz) - 0.5) * 65,
             isMajor: seed > 0.72
           };
         }
@@ -582,17 +754,15 @@
       }
 
       function getTerrainHeight(x, z) {
-        // Sculpted starting bay (open turquoise water at (0, 0) to (0, -390))
         const bayDist = Math.hypot(x * 0.72, z + 170);
         if (bayDist < 225) {
           const t = bayDist / 225;
           return -7.5 + t * t * 6.2;
         }
 
-        // Broad flat peninsula plateau across the bay for the starting harbor metropolis
-        const harborDist = Math.hypot((x - 10) * 0.78, z + 540);
-        if (harborDist < 215) {
-          const blend = Math.max(0, Math.min(1, (harborDist - 165) / 50));
+        const harborDist = Math.hypot((x - 10) * 0.72, z + 550);
+        if (harborDist < 255) {
+          const blend = Math.max(0, Math.min(1, (harborDist - 195) / 60));
           const plateauY = 4.6;
           if (blend <= 0) return plateauY;
           const outer = (fbm(x * 0.0022 + 3.1, z * 0.0022 - 1.7) - 0.44) * 76.0;
@@ -608,15 +778,14 @@
           h += Math.pow(ridge, 2.2) * (h - 8.0) * 0.85;
         }
 
-        // Flatten coastal plateaus where procedural city hubs spawn so towers sit flush
         const cx = Math.round(x / 340);
         const cz = Math.round(z / 340);
         const hub = getCityHubForTile(cx, cz);
         if (hub) {
           const dHub = Math.hypot(x - hub.x, z - hub.z);
-          const rad = hub.isMajor ? 108 : 82;
-          if (dHub < rad + 36) {
-            const b = Math.max(0, Math.min(1, (dHub - rad) / 36));
+          const rad = hub.isMajor ? 105 : 82;
+          if (dHub < rad + 35) {
+            const b = Math.max(0, Math.min(1, (dHub - rad) / 35));
             const cityY = 4.8;
             h = cityY * (1 - b) + h * b;
           }
@@ -626,16 +795,15 @@
       }
 
       // -----------------------------------------------------------------------
-      // 4. OPTIMIZED TERRAIN CHUNKS, MERGED LANDMARKS, DENSE CITIES & FORESTS
+      // 4. OPTIMIZED TERRAIN CHUNKS, MERGED LANDMARKS, FORESTS & BOULDERS
       // -----------------------------------------------------------------------
       const TILE_SIZE = 340;
       const SEGMENTS = 20;
       const GRID_RADIUS = 2;
-      const MAX_PINES_PER_TILE = 220;
-      const MAX_OAKS_PER_TILE = 210;
-      const MAX_ROCKS_PER_TILE = 48;
+      const MAX_PINES_PER_TILE = 190;
+      const MAX_OAKS_PER_TILE = 180;
+      const MAX_ROCKS_PER_TILE = 36;
 
-      // Utility to merge multiple colored primitive parts into a single BufferGeometry (1 draw call)
       function mergeColoredParts(parts) {
         const bakedGeos = [];
         let totalVerts = 0;
@@ -709,7 +877,6 @@
         flatShading: true
       });
 
-      // Pre-merged Forest & Natural Prop Geometries
       const pineGeo = mergeColoredParts([
         { geo: new THREE.CylinderGeometry(0.24, 0.36, 2.2, 5), y: 1.1, colorHex: 0x5c3e2b },
         { geo: new THREE.ConeGeometry(1.75, 3.0, 5), y: 3.1, colorHex: 0x2d5e3e },
@@ -734,7 +901,6 @@
       const activeBuildings = [];
       let destroyedBuildingsCount = 0;
 
-      // Cached single-mesh geometries for all buildings & props (cuts draw calls by ~85% on Chromebooks)
       const buildingTemplateCache = new Map();
 
       function getBuildingTemplate(type, isCityTower, allowWater) {
@@ -901,7 +1067,7 @@
           d: tpl.d,
           colorHex: tpl.colorHex,
           explosiveRadius: tpl.explosiveRadius,
-          hp: isCityTower ? 42 : 28,
+          hp: isCityTower ? 36 : 24,
           alive: true,
           craterMesh: null
         };
@@ -909,7 +1075,6 @@
         return bldg;
       }
 
-      // Pre-merged World Prop Geometries
       const lighthouseGeo = mergeColoredParts([
         { geo: new THREE.CylinderGeometry(1.6, 2.8, 18, 7), y: 9, colorHex: 0xede5d8 },
         { geo: new THREE.CylinderGeometry(2.0, 2.3, 5, 7), y: 10, colorHex: 0xd94e34 },
@@ -949,43 +1114,40 @@
         { geo: new THREE.BoxGeometry(0.45, 9.5, 0.18), x: -3.9, y: 21.75, z: 1.2, rotZ: 2.094, colorHex: 0xede5d8 }
       ]);
 
-      // Build dense coastal harbor metropolis across the starting bay + flanking island towns + suspension bridge
       (function buildStartingHarborCity() {
         const blocks = [
-          [-145, -455, 5, false],
-          [-105, -465, 0, true],
-          [-62,  -460, 2, true],
-          [-15,  -458, 0, true],
-          [32,   -462, 1, true],
-          [78,   -458, 2, true],
-          [125,  -465, 0, true],
-          [165,  -455, 4, false],
-          [-130, -515, 1, true],
-          [-85,  -512, 0, true],
-          [-40,  -518, 2, true],
-          [8,    -510, 0, true],
-          [55,   -516, 0, true],
-          [102,  -512, 1, true],
-          [145,  -518, 3, false],
-          [-110, -568, 0, true],
-          [-62,  -565, 1, true],
-          [-12,  -572, 2, true],
-          [38,   -566, 0, true],
-          [86,   -570, 1, true],
-          [130,  -562, 4, false],
-          [-75,  -618, 4, false],
-          [-20,  -622, 3, false],
-          [35,   -616, 0, true],
-          [85,   -620, 5, false],
-          // West & East Flanking Bay Towns
-          [-265, -240, 1, true],
-          [-230, -255, 0, true],
-          [-285, -285, 4, false],
-          [-245, -305, 5, false],
-          [245,  -220, 0, true],
-          [285,  -235, 1, true],
-          [260,  -275, 3, false],
-          [300,  -285, 5, false]
+          [-155, -455, 5, false],
+          [-112, -465, 0, true],
+          [-68,  -460, 2, true],
+          [-22,  -458, 0, true],
+          [24,   -462, 1, true],
+          [70,   -458, 2, true],
+          [116,  -465, 0, true],
+          [160,  -455, 4, false],
+          [-145, -512, 1, true],
+          [-98,  -512, 0, true],
+          [-52,  -518, 2, true],
+          [-4,   -510, 0, true],
+          [44,   -516, 0, true],
+          [92,   -512, 1, true],
+          [140,  -518, 3, false],
+          [-125, -568, 0, true],
+          [-76,  -565, 1, true],
+          [-26,  -572, 2, true],
+          [24,   -566, 0, true],
+          [74,   -570, 1, true],
+          [124,  -562, 4, false],
+          [-95,  -622, 4, false],
+          [-42,  -625, 3, false],
+          [12,   -618, 0, true],
+          [66,   -622, 1, true],
+          [115,  -618, 5, false],
+          [-220, -490, 1, true],
+          [-255, -525, 0, true],
+          [-215, -555, 5, false],
+          [215,  -495, 1, true],
+          [250,  -530, 0, true],
+          [210,  -560, 4, false]
         ];
         for (let i = 0; i < blocks.length; i++) {
           spawnBuildingAt(blocks[i][0], blocks[i][1], blocks[i][2], blocks[i][3], false);
@@ -1014,7 +1176,7 @@
         bridgeMesh.rotation.y = 0.28;
         scene.add(bridgeMesh);
 
-        [[-85, -345], [95, -365], [15, -320], [-145, -290], [160, -310]].forEach(([sx, sz]) => {
+        [[-85, -345], [95, -365], [15, -320]].forEach(([sx, sz]) => {
           spawnBuildingAt(sx, sz, 5, false, true);
         });
       })();
@@ -1079,7 +1241,6 @@
         const worldZ = cz * TILE_SIZE;
         tile.mesh.position.set(worldX, 0, worldZ);
 
-        // Clean up buildings & props owned by the previous tile coordinates
         for (let i = 0; i < tile.buildings.length; i++) {
           const b = tile.buildings[i];
           if (b.alive) {
@@ -1138,7 +1299,6 @@
         colAttr.needsUpdate = true;
         tile.mesh.geometry.computeVertexNormals();
 
-        // Spawn dense procedural coastal city hubs
         const hub = getCityHubForTile(cx, cz);
         if (hub) {
           const cols = hub.isMajor ? 5 : 4;
@@ -1158,36 +1318,33 @@
           }
         }
 
-        // Additional scattered island compounds, radar stations & fuel depots across every land tile
-        for (let b = 0; b < 3; b++) {
-          const sx = worldX + (hash2(cx * 73 + b, cz * 29) - 0.5) * (TILE_SIZE - 55);
-          const sz = worldZ + (hash2(cx * 17, cz * 83 + b) - 0.5) * (TILE_SIZE - 55);
-          if (Math.hypot((sx - 10) * 0.78, sz + 540) < 195) continue;
-          if (hub && Math.hypot(sx - hub.x, sz - hub.z) < 110) continue;
-          const sh = getTerrainHeight(sx, sz);
-          if (sh > 3.2 && sh < 22.0) {
-            const sType = 3 + ((cx + cz + b) & 1);
-            const sBldg = spawnBuildingAt(sx, sz, sType, false, false);
-            if (sBldg) {
-              tile.buildings.push(sBldg);
+        for (let ob = 0; ob < 3; ob++) {
+          const ox = worldX + (hash2(cx * 73 + ob, cz * 29) - 0.5) * (TILE_SIZE - 55);
+          const oz = worldZ + (hash2(cx * 17, cz * 89 + ob) - 0.5) * (TILE_SIZE - 55);
+          if (Math.hypot((ox - 10) * 0.72, oz + 550) < 230) continue;
+          if (hub && Math.hypot(ox - hub.x, oz - hub.z) < 115) continue;
+          const oh = getTerrainHeight(ox, oz);
+          if (oh > 3.2 && oh < 16.0) {
+            const bType = 3 + (ob % 3);
+            const bldg = spawnBuildingAt(ox, oz, bType, false, false);
+            if (bldg) {
+              tile.buildings.push(bldg);
             }
           }
         }
 
-        // Populate dense forests (conifer pines + golden-orange autumn oaks) & boulders
         let pineIdx = 0;
         let oakIdx = 0;
         let rockIdx = 0;
 
-        for (let s = 0; s < 390; s++) {
+        for (let s = 0; s < 360; s++) {
           const rx = (hash2(cx * 101 + s, cz * 37) - 0.5) * (TILE_SIZE - 14);
           const rz = (hash2(cx * 59, cz * 113 + s) - 0.5) * (TILE_SIZE - 14);
           const wx = worldX + rx;
           const wz = worldZ + rz;
 
-          // Keep starting harbor metropolis plaza clear of trees
-          if (Math.hypot((wx - 10) * 0.78, wz + 540) < 185) continue;
-          if (hub && Math.hypot(wx - hub.x, wz - hub.z) < (hub.isMajor ? 102 : 78)) continue;
+          if (Math.hypot((wx - 10) * 0.72, wz + 550) < 220) continue;
+          if (hub && Math.hypot(wx - hub.x, wz - hub.z) < (hub.isMajor ? 102 : 80)) continue;
 
           const h = getTerrainHeight(wx, wz);
 
@@ -1210,9 +1367,9 @@
               tile.oakInst.setMatrixAt(oakIdx, dummyObj.matrix);
 
               const cPick = hash2(wx * 0.3, wz * 0.3);
-              if (cPick > 0.60) {
+              if (cPick > 0.62) {
                 tmpColor.setRGB(0.88, 0.42, 0.22);
-              } else if (cPick > 0.26) {
+              } else if (cPick > 0.28) {
                 tmpColor.setRGB(0.95, 0.72, 0.24);
               } else {
                 tmpColor.setRGB(0.62, 0.74, 0.34);
@@ -1220,8 +1377,8 @@
               tile.oakInst.setColorAt(oakIdx, tmpColor);
               oakIdx++;
             }
-          } else if ((h > 17.5 && h < 31.0) || (h > 1.2 && h < 3.4)) {
-            if (rockIdx < MAX_ROCKS_PER_TILE && hash2(wx * 0.5, wz * 0.5) > 0.35) {
+          } else if ((h > 17.5 && h < 30.0) || (h > 1.2 && h < 3.4)) {
+            if (rockIdx < MAX_ROCKS_PER_TILE && hash2(wx * 0.5, wz * 0.5) > 0.42) {
               const sc = 0.9 + hash2(wx, wz) * 1.4;
               dummyObj.position.set(wx, h - 0.25, wz);
               dummyObj.rotation.set(hash2(s, cz), hash2(cx, s) * Math.PI, 0);
@@ -1253,11 +1410,10 @@
         tile.rockInst.instanceMatrix.needsUpdate = true;
         if (tile.rockInst.instanceColor) tile.rockInst.instanceColor.needsUpdate = true;
 
-        // Coastal lighthouses, wooden piers with boats, watchtowers, stone arches, wind turbines & cargo freighters
         for (let p = 0; p < 5; p++) {
           const px = worldX + (hash2(cx * 31 + p, cz * 17) - 0.5) * (TILE_SIZE - 45);
           const pz = worldZ + (hash2(cx * 19, cz * 43 + p) - 0.5) * (TILE_SIZE - 45);
-          if (Math.hypot((px - 10) * 0.78, pz + 540) < 190) continue;
+          if (Math.hypot((px - 10) * 0.72, pz + 550) < 225) continue;
           const ph = getTerrainHeight(px, pz);
 
           if (ph > 1.2 && ph < 4.5 && p === 0) {
@@ -1359,7 +1515,7 @@
       }
 
       // -----------------------------------------------------------------------
-      // 5. HIGH-END CLAUDE FABLE 5.2 SCULPTED FIGHTER JET MODELS (IMG_1165.PNG)
+      // 5. HIGH-END SCULPTED FIGHTER JET MODELS
       // -----------------------------------------------------------------------
       function createLoftedHull(stations, baseColorHex, bellyColorHex) {
         const positions = [];
@@ -1467,7 +1623,6 @@
         const lightPanelMat = new THREE.MeshLambertMaterial({ color: 0xd9e1ec, flatShading: true });
         const accentBlueMat = new THREE.MeshLambertMaterial({ color: 0x4b749f, flatShading: true });
 
-        // Sculpted stealth fuselage matching IMG_1165.PNG silhouette
         const fuselageGeo = createLoftedHull([
           { z: -4.9, yTop: -0.08, yChine: -0.10, yBelly: -0.12, wChine: 0.02, wBelly: 0.01 },
           { z: -3.5, yTop:  0.22, yChine:  0.04, yBelly: -0.22, wChine: 0.44, wBelly: 0.30 },
@@ -1478,13 +1633,11 @@
         ], 0x9aa6b8, 0x566275);
         root.add(new THREE.Mesh(fuselageGeo, hullMat));
 
-        // Radome tip + pitot needle
         const radome = new THREE.Mesh(new THREE.ConeGeometry(0.18, 0.75, 5), darkTrimMat);
         radome.rotation.x = -Math.PI / 2;
         radome.position.set(0, -0.09, -5.15);
         root.add(radome);
 
-        // Golden-amber bubble canopy (prominent signature detail from IMG_1165.PNG)
         const canopy = createBubbleCanopy(2.45, 0.82, 0.56, 0xf2be42);
         canopy.position.set(0, 0.44, -1.65);
         root.add(canopy);
@@ -1493,7 +1646,6 @@
         canopyFrame.position.set(0, 0.45, -1.65);
         root.add(canopyFrame);
 
-        // Twin side air intakes + turbine faces
         [-0.86, 0.86].forEach((ix) => {
           const intake = new THREE.Mesh(new THREE.BoxGeometry(0.54, 0.46, 2.2), lightPanelMat);
           intake.position.set(ix, -0.02, -0.35);
@@ -1504,7 +1656,6 @@
           root.add(throat);
         });
 
-        // Swept main delta wings + dark leading/trailing trim
         const wingGeo = createTaperedWing(3.65, 2.65, 0.68, 1.85, -0.06, 0.16, 0xb8c3d4, 0x3b485e);
         const rightWing = new THREE.Mesh(wingGeo, hullMat);
         rightWing.position.set(0.78, 0.08, -0.35);
@@ -1515,14 +1666,12 @@
         leftWing.position.set(-0.78, 0.08, -0.35);
         root.add(leftWing);
 
-        // Wingtip missile rails
         [-4.35, 4.35].forEach((wx) => {
           const rail = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.12, 1.55), darkTrimMat);
           rail.position.set(wx, 0.02, 1.45);
           root.add(rail);
         });
 
-        // Horizontal stabilators
         const hStabGeo = createTaperedWing(1.65, 1.25, 0.36, 0.88, 0.04, 0.11, 0x8d99ae, 0x2a3140);
         const rHStab = new THREE.Mesh(hStabGeo, hullMat);
         rHStab.position.set(0.68, 0.04, 2.35);
@@ -1533,7 +1682,6 @@
         lHStab.position.set(-0.68, 0.04, 2.35);
         root.add(lHStab);
 
-        // Twin outward-canted vertical tail fins with blue rudder tips
         [-0.64, 0.64].forEach((vx, idx) => {
           const finGroup = new THREE.Group();
           finGroup.position.set(vx, 0.32, 2.15);
@@ -1552,7 +1700,6 @@
           root.add(finGroup);
         });
 
-        // Twin engine exhaust nozzles & golden-orange afterburner cones
         const nozzleGeo = new THREE.CylinderGeometry(0.28, 0.34, 0.55, 8);
         nozzleGeo.rotateX(Math.PI / 2);
         const leftNozzle = new THREE.Mesh(nozzleGeo, darkTrimMat);
@@ -1575,15 +1722,16 @@
         rightFlame.position.set(0.42, 0.02, 4.55);
         root.add(rightFlame);
 
-        // 6 visible underwing missiles that detach when fired
         const wingMissiles = [];
         const mOffsets = [
-          [-2.05, -0.14, 0.55],
-          [ 2.05, -0.14, 0.55],
-          [-2.85, -0.16, 0.95],
-          [ 2.85, -0.16, 0.95],
-          [-3.55, -0.18, 1.28],
-          [ 3.55, -0.18, 1.28]
+          [-1.85, -0.14, 0.45],
+          [ 1.85, -0.14, 0.45],
+          [-2.45, -0.15, 0.72],
+          [ 2.45, -0.15, 0.72],
+          [-3.05, -0.16, 1.02],
+          [ 3.05, -0.16, 1.02],
+          [-3.65, -0.18, 1.32],
+          [ 3.65, -0.18, 1.32]
         ];
         const mBodyGeo = new THREE.CylinderGeometry(0.07, 0.07, 1.35, 6);
         mBodyGeo.rotateX(Math.PI / 2);
@@ -1632,7 +1780,6 @@
         canopy.position.set(0, 0.42, -1.45);
         root.add(canopy);
 
-        // Forward canards
         const canardGeo = createTaperedWing(1.15, 0.72, 0.24, 0.35, 0.06, 0.08, 0xd9483b, 0x262932);
         const rCanard = new THREE.Mesh(canardGeo, hullMat);
         rCanard.position.set(0.68, 0.14, -1.85);
@@ -1643,7 +1790,6 @@
         lCanard.position.set(-0.68, 0.14, -1.85);
         root.add(lCanard);
 
-        // Swept crimson-accented wings
         const wingGeo = createTaperedWing(3.55, 2.55, 0.62, 1.95, -0.05, 0.15, 0x454b59, 0xd9483b);
         const rWing = new THREE.Mesh(wingGeo, hullMat);
         rWing.position.set(0.74, 0.06, -0.15);
@@ -1688,7 +1834,7 @@
       const wingMissiles = playerBuilt.wingMissiles;
       scene.add(jetGroup);
 
-      const MAX_MISSILES = 6;
+      const MAX_MISSILES = 8;
       let missileAmmo = MAX_MISSILES;
       const missileReloadTimers = [];
 
@@ -1758,7 +1904,6 @@
       const leftTrail = createRibbonTrail(48, 0.24, 0xfffaf2);
       const rightTrail = createRibbonTrail(48, 0.24, 0xfffaf2);
 
-      // Pre-allocated pool of 160 Bayer-dithered smoke spheres (zero runtime allocations!)
       const puffGeo = new THREE.IcosahedronGeometry(0.65, 1);
       const puffPool = [];
       for (let i = 0; i < 160; i++) {
@@ -1812,7 +1957,6 @@
           const sc = p.startScale + (p.endScale - p.startScale) * t;
           p.mesh.scale.setScalar(sc);
 
-          // Signature Fable 5.2 color progression (orange -> warm peach -> crisp dithered white)
           if (p.colorMode === 'fire') {
             if (t < 0.35) {
               p.mesh.material.color.setHex(0xff7722);
@@ -1834,15 +1978,34 @@
       }
 
       // -----------------------------------------------------------------------
-      // 7. REALISTIC MULTI-LAYERED WEB AUDIO ENGINE (ALWAYS ON AFTER FIRST GESTURE)
+      // 7. REALISTIC MULTI-LAYERED WEB AUDIO ENGINE + SYNTH FLIGHT SOUNDTRACK
       // -----------------------------------------------------------------------
       let audioCtx = null;
       let masterGain = null;
+      let sfxBus = null;
+      let musicBus = null;
       let engineOsc1 = null;
       let engineOsc2 = null;
       let engineNoiseGain = null;
       let engineNoiseFilter = null;
       let audioInitialized = false;
+      let musicEnabled = true;
+      let sfxEnabled = true;
+      let musicTimer = 0;
+      let musicStep = 0;
+
+      const MUSIC_CHORDS = [
+        [174.61, 220.00, 261.63, 329.63],
+        [164.81, 196.00, 246.94, 293.66],
+        [146.83, 174.61, 220.00, 261.63],
+        [130.81, 164.81, 196.00, 246.94]
+      ];
+      const MUSIC_ARP = [
+        [523.25, 659.25, 783.99, 659.25, 587.33, 659.25, 523.25, 440.00],
+        [493.88, 587.33, 739.99, 587.33, 493.88, 587.33, 440.00, 392.00],
+        [440.00, 523.25, 659.25, 523.25, 440.00, 523.25, 392.00, 349.23],
+        [392.00, 493.88, 587.33, 659.25, 587.33, 493.88, 440.00, 392.00]
+      ];
 
       function initAudio() {
         if (audioInitialized) {
@@ -1857,16 +2020,24 @@
           audioCtx = new AudioContextClass();
 
           masterGain = audioCtx.createGain();
-          masterGain.gain.value = 0.24;
+          masterGain.gain.value = 0.28;
           masterGain.connect(audioCtx.destination);
+
+          sfxBus = audioCtx.createGain();
+          sfxBus.gain.value = sfxEnabled ? 1.0 : 0.0;
+          sfxBus.connect(masterGain);
+
+          musicBus = audioCtx.createGain();
+          musicBus.gain.value = musicEnabled ? 0.42 : 0.0;
+          musicBus.connect(masterGain);
 
           // Dual-harmonic jet turbine whine
           const turbineFilter = audioCtx.createBiquadFilter();
           turbineFilter.type = 'lowpass';
-          turbineFilter.frequency.value = 540;
+          turbineFilter.frequency.value = 560;
 
           const turbineGain = audioCtx.createGain();
-          turbineGain.gain.value = 0.065;
+          turbineGain.gain.value = 0.06;
 
           engineOsc1 = audioCtx.createOscillator();
           engineOsc1.type = 'triangle';
@@ -1879,11 +2050,11 @@
           engineOsc1.connect(turbineFilter);
           engineOsc2.connect(turbineFilter);
           turbineFilter.connect(turbineGain);
-          turbineGain.connect(masterGain);
+          turbineGain.connect(sfxBus);
           engineOsc1.start();
           engineOsc2.start();
 
-          // Warm brown-noise jet exhaust roar
+          // Warm brown-noise jet exhaust & afterburner roar
           const bufferSize = audioCtx.sampleRate * 2;
           const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
           const data = noiseBuffer.getChannelData(0);
@@ -1904,67 +2075,156 @@
           engineNoiseFilter.frequency.value = 280;
 
           engineNoiseGain = audioCtx.createGain();
-          engineNoiseGain.gain.value = 0.16;
+          engineNoiseGain.gain.value = 0.15;
 
           noiseSource.connect(engineNoiseFilter);
           engineNoiseFilter.connect(engineNoiseGain);
-          engineNoiseGain.connect(masterGain);
+          engineNoiseGain.connect(sfxBus);
           noiseSource.start();
 
           audioInitialized = true;
         } catch (err) {}
       }
 
+      function updateMusicSequencer(dt) {
+        if (!audioInitialized || !audioCtx || !musicEnabled || isPaused) return;
+        musicTimer -= dt;
+        if (musicTimer > 0) return;
+
+        const stepDur = jetState.boosting ? 0.21 : 0.25;
+        musicTimer = stepDur;
+
+        const bar = Math.floor(musicStep / 8) % MUSIC_CHORDS.length;
+        const beat = musicStep % 8;
+        const now = audioCtx.currentTime;
+
+        if (beat === 0) {
+          const chord = MUSIC_CHORDS[bar];
+          for (let i = 0; i < chord.length; i++) {
+            const osc = audioCtx.createOscillator();
+            const filter = audioCtx.createBiquadFilter();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(chord[i], now);
+
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(680, now);
+
+            gain.gain.setValueAtTime(0.001, now);
+            gain.gain.linearRampToValueAtTime(0.048, now + 0.18);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + stepDur * 7.8);
+
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(musicBus);
+            osc.start(now);
+            osc.stop(now + stepDur * 8.0);
+          }
+        }
+
+        if (beat === 0 || beat === 3 || beat === 4 || beat === 6) {
+          const bassOsc = audioCtx.createOscillator();
+          const bassGain = audioCtx.createGain();
+          bassOsc.type = 'sine';
+          bassOsc.frequency.setValueAtTime(MUSIC_CHORDS[bar][0] * 0.5, now);
+          bassGain.gain.setValueAtTime(0.11, now);
+          bassGain.gain.exponentialRampToValueAtTime(0.001, now + stepDur * 1.4);
+          bassOsc.connect(bassGain);
+          bassGain.connect(musicBus);
+          bassOsc.start(now);
+          bassOsc.stop(now + stepDur * 1.45);
+        }
+
+        const noteFreq = MUSIC_ARP[bar][beat];
+        const leadOsc = audioCtx.createOscillator();
+        const leadFilter = audioCtx.createBiquadFilter();
+        const leadGain = audioCtx.createGain();
+        leadOsc.type = 'sine';
+        leadOsc.frequency.setValueAtTime(noteFreq, now);
+
+        leadFilter.type = 'lowpass';
+        leadFilter.frequency.setValueAtTime(1400, now);
+
+        leadGain.gain.setValueAtTime(0.042, now);
+        leadGain.gain.exponentialRampToValueAtTime(0.001, now + stepDur * 1.6);
+
+        leadOsc.connect(leadFilter);
+        leadFilter.connect(leadGain);
+        leadGain.connect(musicBus);
+        leadOsc.start(now);
+        leadOsc.stop(now + stepDur * 1.65);
+
+        musicStep = (musicStep + 1) % 32;
+      }
+
       function playSoundEffect(type) {
-        if (!audioInitialized || !audioCtx) return;
+        if (!audioInitialized || !audioCtx || !sfxEnabled) return;
         const now = audioCtx.currentTime;
 
         if (type === 'cannon') {
           const osc = audioCtx.createOscillator();
+          const clink = audioCtx.createOscillator();
           const gain = audioCtx.createGain();
           osc.type = 'triangle';
-          osc.frequency.setValueAtTime(165 + Math.random() * 25, now);
-          osc.frequency.exponentialRampToValueAtTime(38, now + 0.075);
-          gain.gain.setValueAtTime(0.18, now);
+          osc.frequency.setValueAtTime(175 + Math.random() * 25, now);
+          osc.frequency.exponentialRampToValueAtTime(36, now + 0.075);
+
+          clink.type = 'square';
+          clink.frequency.setValueAtTime(920 + Math.random() * 140, now);
+          clink.frequency.exponentialRampToValueAtTime(310, now + 0.03);
+
+          gain.gain.setValueAtTime(0.17, now);
           gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
           osc.connect(gain);
-          gain.connect(masterGain);
+          clink.connect(gain);
+          gain.connect(sfxBus);
           osc.start(now);
+          clink.start(now);
           osc.stop(now + 0.085);
+          clink.stop(now + 0.035);
         } else if (type === 'missile') {
           const osc = audioCtx.createOscillator();
           const gain = audioCtx.createGain();
           osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(340, now);
-          osc.frequency.exponentialRampToValueAtTime(95, now + 0.34);
-          gain.gain.setValueAtTime(0.22, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.36);
+          osc.frequency.setValueAtTime(360, now);
+          osc.frequency.exponentialRampToValueAtTime(88, now + 0.36);
+          gain.gain.setValueAtTime(0.24, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
           osc.connect(gain);
-          gain.connect(masterGain);
+          gain.connect(sfxBus);
           osc.start(now);
-          osc.stop(now + 0.37);
-        } else if (type === 'explosion') {
+          osc.stop(now + 0.39);
+        } else if (type === 'explosion' || type === 'splash') {
           const osc = audioCtx.createOscillator();
+          const sub = audioCtx.createOscillator();
           const gain = audioCtx.createGain();
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(115, now);
-          osc.frequency.exponentialRampToValueAtTime(24, now + 0.55);
-          gain.gain.setValueAtTime(0.42, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.58);
+          osc.type = type === 'splash' ? 'triangle' : 'sawtooth';
+          osc.frequency.setValueAtTime(type === 'splash' ? 210 : 120, now);
+          osc.frequency.exponentialRampToValueAtTime(22, now + 0.62);
+
+          sub.type = 'sine';
+          sub.frequency.setValueAtTime(85, now);
+          sub.frequency.exponentialRampToValueAtTime(20, now + 0.65);
+
+          gain.gain.setValueAtTime(0.46, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.66);
           osc.connect(gain);
-          gain.connect(masterGain);
+          sub.connect(gain);
+          gain.connect(sfxBus);
           osc.start(now);
-          osc.stop(now + 0.6);
+          sub.start(now);
+          osc.stop(now + 0.68);
+          sub.stop(now + 0.68);
         } else if (type === 'roll') {
           const osc = audioCtx.createOscillator();
           const gain = audioCtx.createGain();
           osc.type = 'sine';
           osc.frequency.setValueAtTime(140, now);
-          osc.frequency.exponentialRampToValueAtTime(230, now + 0.18);
+          osc.frequency.exponentialRampToValueAtTime(235, now + 0.18);
           gain.gain.setValueAtTime(0.09, now);
           gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
           osc.connect(gain);
-          gain.connect(masterGain);
+          gain.connect(sfxBus);
           osc.start(now);
           osc.stop(now + 0.24);
         } else if (type === 'alert') {
@@ -1976,9 +2236,20 @@
           gain.gain.setValueAtTime(0.09, now);
           gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
           osc.connect(gain);
-          gain.connect(masterGain);
+          gain.connect(sfxBus);
           osc.start(now);
           osc.stop(now + 0.23);
+        } else if (type === 'lock') {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(1420, now);
+          gain.gain.setValueAtTime(0.045, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+          osc.connect(gain);
+          gain.connect(sfxBus);
+          osc.start(now);
+          osc.stop(now + 0.08);
         }
       }
 
@@ -2113,7 +2384,7 @@
       }
 
       // -----------------------------------------------------------------------
-      // 9. WEAPONS (TWIN AUTOCANNONS & HOMING MISSILES) & CLIP-READY BOT AI
+      // 9. WEAPONS, EASIER TARGET LOCK-ON & CLIP-READY BOT AI
       // -----------------------------------------------------------------------
       const killCountEl = document.getElementById('kill-count');
       const bldgCountEl = document.getElementById('bldg-count');
@@ -2137,7 +2408,7 @@
       const missiles = [];
       const enemyBots = [];
 
-      const bulletGeo = new THREE.BoxGeometry(0.24, 0.24, 3.2);
+      const bulletGeo = new THREE.BoxGeometry(0.26, 0.26, 3.6);
       const playerBulletMat = new THREE.MeshBasicMaterial({ color: 0xffe07d });
       const botBulletMat = new THREE.MeshBasicMaterial({ color: 0xff5a45 });
 
@@ -2152,11 +2423,297 @@
         }
       }
 
+      // -----------------------------------------------------------------------
+      // 10. FLIGHT STATE, PAUSE / TUTORIAL UI & INPUT CONTROLS
+      // -----------------------------------------------------------------------
+      const reticleEl = document.getElementById('reticle');
+      const reticlePipEl = document.getElementById('reticle-pip');
+      const cockpitHudEl = document.getElementById('cockpit-hud');
+      const hudSpdEl = document.getElementById('hud-spd');
+      const hudAltEl = document.getElementById('hud-alt');
+      const cursorLockLabelEl = document.getElementById('cursor-lock-label');
+
+      const jetState = {
+        pos: new THREE.Vector3(0, 76, 0),
+        yaw: 0,
+        pitch: -0.02,
+        bank: 0,
+        rollAngle: 0,
+        rolling: false,
+        rollSoundCooldown: 0,
+        speed: 88,
+        baseSpeed: 88,
+        boostSpeed: 158,
+        boosting: false,
+        firingGuns: false,
+        cockpitView: false,
+        puffTimer: 0,
+        crashed: false,
+        crashTimer: 0,
+        spawnShield: 2.5
+      };
+
+      let isPaused = false;
+      const pauseModalEl = document.getElementById('pause-modal');
+      const tutorialModalEl = document.getElementById('tutorial-modal');
+      const tutorialChecklistEl = document.getElementById('tutorial-checklist');
+      const guiSteerEl = document.getElementById('gui-steer');
+      const guiGunsEl = document.getElementById('gui-guns');
+      const guiRollEl = document.getElementById('gui-roll');
+      const guiBoostEl = document.getElementById('gui-boost');
+      const guiCockpitEl = document.getElementById('gui-cockpit');
+      const guiCursorEl = document.getElementById('gui-cursor');
+
+      const tutProgress = { steer: false, shoot: false, missile: false, roll: false };
+
+      function completeTutorialStep(stepKey) {
+        if (tutProgress[stepKey]) return;
+        tutProgress[stepKey] = true;
+        const row = document.getElementById(`tut-step-${stepKey}`);
+        if (row) {
+          const box = row.querySelector('.tut-box');
+          if (box) {
+            box.textContent = '[✓]';
+            box.classList.remove('text-amber-300');
+            box.classList.add('text-emerald-300');
+          }
+          row.classList.add('text-emerald-200/75');
+        }
+        if (tutProgress.steer && tutProgress.shoot && tutProgress.missile && tutProgress.roll) {
+          setTimeout(() => {
+            if (tutorialChecklistEl) tutorialChecklistEl.style.display = 'none';
+          }, 1800);
+        }
+      }
+
+      const steerInput = { x: 0, y: 0 };
+      const keysPressed = {};
+      let isCursorLocked = false;
+      let activeTouchId = null;
+
+      // Scratch math objects for zero per-frame allocations
+      const _v1 = new THREE.Vector3();
+      const _v2 = new THREE.Vector3();
+      const _v3 = new THREE.Vector3();
+      const _v4 = new THREE.Vector3();
+      const _euler = new THREE.Euler();
+
+      function updateReticleVisual(clientX, clientY) {
+        if (isCursorLocked) {
+          reticleEl.style.left = '50%';
+          reticleEl.style.top = '50%';
+          if (reticlePipEl) {
+            reticlePipEl.setAttribute('cx', (12 + steerInput.x * 7.5).toFixed(2));
+            reticlePipEl.setAttribute('cy', (12 + steerInput.y * 7.5).toFixed(2));
+          }
+        } else {
+          if (clientX !== undefined && clientY !== undefined) {
+            reticleEl.style.left = `${clientX}px`;
+            reticleEl.style.top = `${clientY}px`;
+          }
+          if (reticlePipEl) {
+            reticlePipEl.setAttribute('cx', '12');
+            reticlePipEl.setAttribute('cy', '12');
+          }
+        }
+      }
+
+      function lockCursor() {
+        isCursorLocked = true;
+        steerInput.x = 0;
+        steerInput.y = 0;
+        container.style.cursor = 'none';
+        if (cursorLockLabelEl) cursorLockLabelEl.textContent = 'UNLOCK';
+        updateReticleVisual();
+        if (container.requestPointerLock) {
+          try {
+            const res = container.requestPointerLock();
+            if (res && typeof res.catch === 'function') {
+              res.catch(() => {});
+            }
+          } catch (err) {}
+        }
+      }
+
+      function unlockCursor() {
+        isCursorLocked = false;
+        steerInput.x = 0;
+        steerInput.y = 0;
+        container.style.cursor = 'crosshair';
+        if (cursorLockLabelEl) cursorLockLabelEl.textContent = 'LOCK';
+        updateReticleVisual(window.innerWidth * 0.5, window.innerHeight * 0.5);
+        if (document.pointerLockElement === container && document.exitPointerLock) {
+          try {
+            document.exitPointerLock();
+          } catch (err) {}
+        }
+      }
+
+      function toggleCursorLock() {
+        if (isCursorLocked) {
+          unlockCursor();
+        } else {
+          lockCursor();
+        }
+      }
+
+      document.addEventListener('pointerlockchange', () => {
+        if (document.pointerLockElement === container) {
+          isCursorLocked = true;
+          container.style.cursor = 'none';
+          if (cursorLockLabelEl) cursorLockLabelEl.textContent = 'UNLOCK';
+        } else if (isCursorLocked) {
+          unlockCursor();
+        }
+      });
+
+      function setPaused(paused) {
+        if (isPaused === paused) return;
+        isPaused = paused;
+        if (isPaused) {
+          jetState.firingGuns = false;
+          if (isCursorLocked) unlockCursor();
+          document.getElementById('pause-kills').textContent = String(killCount);
+          document.getElementById('pause-cities').textContent = String(destroyedBuildingsCount);
+          document.getElementById('pause-hull').textContent = `${Math.round(playerHull)}%`;
+          pauseModalEl.style.display = 'flex';
+          if (audioCtx && audioCtx.state === 'running' && masterGain) {
+            masterGain.gain.setTargetAtTime(0.05, audioCtx.currentTime, 0.08);
+          }
+        } else {
+          pauseModalEl.style.display = 'none';
+          tutorialModalEl.style.display = 'none';
+          lastTime = performance.now();
+          if (audioCtx && audioCtx.state === 'running' && masterGain) {
+            masterGain.gain.setTargetAtTime(0.28, audioCtx.currentTime, 0.08);
+          }
+        }
+      }
+
+      function openTutorialModal() {
+        setPaused(true);
+        pauseModalEl.style.display = 'none';
+        tutorialModalEl.style.display = 'flex';
+      }
+
+      function redeployJet() {
+        jetState.crashed = false;
+        jetState.crashTimer = 0;
+        jetState.spawnShield = 2.5;
+        jetState.pos.y = Math.max(92, getTerrainHeight(jetState.pos.x, jetState.pos.z) + 75);
+        jetState.pitch = 0;
+        jetState.bank = 0;
+        jetState.rollAngle = 0;
+        jetState.speed = jetState.baseSpeed;
+        jetGroup.visible = !jetState.cockpitView;
+        leftTrail.initialized = false;
+        rightTrail.initialized = false;
+        playerHull = 100;
+        hullValueEl.textContent = '100%';
+        missileAmmo = MAX_MISSILES;
+        missileReloadTimers.length = 0;
+        updateMissileHUD();
+      }
+
+      function triggerPlayerCrash(reason, isWater) {
+        if (jetState.crashed || jetState.spawnShield > 0) return;
+        jetState.crashed = true;
+        jetState.crashTimer = 1.75;
+        jetState.firingGuns = false;
+        jetGroup.visible = false;
+        playerHull = 0;
+        hullValueEl.textContent = '0%';
+        screenShake = 1.35;
+        playSoundEffect(isWater ? 'splash' : 'explosion');
+        showRadioAlert(`${reason} · REDEPLOYING...`);
+
+        spawnShockwave(jetState.pos, 42, isWater ? 0x9ef0ff : 0xffa436);
+
+        for (let i = 0; i < 18; i++) {
+          const vel = new THREE.Vector3(
+            (Math.random() - 0.5) * 55,
+            10 + Math.random() * 34,
+            (Math.random() - 0.5) * 55
+          );
+          const cols = isWater
+            ? [0xd9e1ec, 0x9ef0ff, 0xf2be42, 0x4b749f]
+            : [0xd9e1ec, 0xffa436, 0x2a3140, 0xf2be42];
+          spawnVoxelChunk(jetState.pos, vel, 1.1 + Math.random() * 1.4, cols[i % cols.length]);
+        }
+
+        for (let p = 0; p < 10; p++) {
+          spawnPuff(
+            jetState.pos.clone().add(new THREE.Vector3((Math.random() - 0.5) * 7, Math.random() * 5, (Math.random() - 0.5) * 7)),
+            new THREE.Vector3((Math.random() - 0.5) * 16, 6 + Math.random() * 16, (Math.random() - 0.5) * 16),
+            2.4,
+            8.5,
+            1.3 + Math.random() * 0.4,
+            isWater ? 'exhaust' : 'fire'
+          );
+        }
+      }
+
+      document.getElementById('btn-pause-top').addEventListener('click', () => {
+        initAudio();
+        setPaused(!isPaused);
+      });
+      document.getElementById('btn-help-top').addEventListener('click', () => {
+        initAudio();
+        openTutorialModal();
+      });
+      document.getElementById('btn-close-checklist').addEventListener('click', () => {
+        tutorialChecklistEl.style.display = 'none';
+      });
+      document.getElementById('btn-resume').addEventListener('click', () => {
+        setPaused(false);
+      });
+      document.getElementById('btn-open-tutorial').addEventListener('click', () => {
+        openTutorialModal();
+      });
+      document.getElementById('btn-close-tutorial').addEventListener('click', () => {
+        tutorialModalEl.style.display = 'none';
+        setPaused(false);
+      });
+      document.getElementById('btn-start-flying').addEventListener('click', () => {
+        tutorialModalEl.style.display = 'none';
+        setPaused(false);
+      });
+      document.getElementById('btn-redeploy').addEventListener('click', () => {
+        redeployJet();
+        setPaused(false);
+      });
+
+      const btnToggleMusic = document.getElementById('btn-toggle-music');
+      btnToggleMusic.addEventListener('click', () => {
+        initAudio();
+        musicEnabled = !musicEnabled;
+        btnToggleMusic.textContent = musicEnabled ? 'MUSIC: ON' : 'MUSIC: OFF';
+        btnToggleMusic.classList.toggle('text-emerald-200', musicEnabled);
+        btnToggleMusic.classList.toggle('text-white/50', !musicEnabled);
+        if (musicBus && audioCtx) {
+          musicBus.gain.setTargetAtTime(musicEnabled ? 0.42 : 0.0, audioCtx.currentTime, 0.05);
+        }
+      });
+
+      const btnToggleSfx = document.getElementById('btn-toggle-sfx');
+      btnToggleSfx.addEventListener('click', () => {
+        initAudio();
+        sfxEnabled = !sfxEnabled;
+        btnToggleSfx.textContent = sfxEnabled ? 'SFX: ON' : 'SFX: OFF';
+        btnToggleSfx.classList.toggle('text-emerald-200', sfxEnabled);
+        btnToggleSfx.classList.toggle('text-white/50', !sfxEnabled);
+        if (sfxBus && audioCtx) {
+          sfxBus.gain.setTargetAtTime(sfxEnabled ? 1.0 : 0.0, audioCtx.currentTime, 0.05);
+        }
+      });
+
       function firePlayerAutocannon(forceImmediate) {
+        if (isPaused || jetState.crashed) return;
         if (!forceImmediate && gunCooldown > 0) return;
-        gunCooldown = 0.045;
+        gunCooldown = 0.042;
         gunSide *= -1;
         playSoundEffect('cannon');
+        completeTutorialStep('shoot');
 
         const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(jetGroup.quaternion);
         const right = new THREE.Vector3(1, 0, 0).applyQuaternion(jetGroup.quaternion);
@@ -2164,18 +2721,17 @@
           .addScaledVector(forward, 4.6)
           .addScaledVector(right, gunSide * 0.65);
 
-        // Subtle forward-cone aim assist so dogfight clips feel ultra-satisfying
         const aimDir = forward.clone();
         if (lockedTarget && lockedTarget.alive) {
           const targetPos = lockedTarget.pos;
           const toTarget = targetPos.clone().sub(spawnPos);
           const dist = toTarget.length();
           if (lockedTargetType === 'bot' && lockedTarget.vel) {
-            toTarget.addScaledVector(lockedTarget.vel, dist / 460);
+            toTarget.addScaledVector(lockedTarget.vel, dist / 580);
           }
           toTarget.normalize();
-          if (forward.dot(toTarget) > 0.92) {
-            aimDir.lerp(toTarget, 0.42).normalize();
+          if (forward.dot(toTarget) > 0.85) {
+            aimDir.lerp(toTarget, 0.72).normalize();
           }
         }
 
@@ -2186,18 +2742,19 @@
 
         bullets.push({
           mesh,
-          vel: aimDir.multiplyScalar(480),
+          vel: aimDir.multiplyScalar(580),
           fromPlayer: true,
-          life: 1.45
+          life: 1.5
         });
       }
 
       function fireMissile() {
-        if (missileAmmo <= 0) return;
+        if (isPaused || jetState.crashed || missileAmmo <= 0) return;
         missileAmmo--;
-        missileReloadTimers.push(4.2);
+        missileReloadTimers.push(2.8);
         updateMissileHUD();
         playSoundEffect('missile');
+        completeTutorialStep('missile');
 
         const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(jetGroup.quaternion);
         const right = new THREE.Vector3(1, 0, 0).applyQuaternion(jetGroup.quaternion);
@@ -2213,7 +2770,7 @@
 
         missiles.push({
           mesh,
-          vel: forward.clone().multiplyScalar(275),
+          vel: forward.clone().multiplyScalar(340),
           target: lockedTarget && lockedTarget.alive ? lockedTarget : null,
           targetType: lockedTargetType,
           life: 4.5,
@@ -2231,7 +2788,6 @@
         playSoundEffect('explosion');
         triggerHitmarker();
 
-        // Scorched crater footprint
         const crater = new THREE.Mesh(
           new THREE.CylinderGeometry(bldg.w * 0.65, bldg.w * 0.78, 0.5, 8),
           craterMat
@@ -2242,9 +2798,7 @@
 
         spawnShockwave(new THREE.Vector3(bldg.pos.x, bldg.groundY + 1, bldg.pos.z), bldg.explosiveRadius, 0xffb347);
 
-        // Shatter into bouncing 3D voxel blocks
-        const chunkCount = 16;
-        for (let i = 0; i < chunkCount; i++) {
+        for (let i = 0; i < 16; i++) {
           const cPos = new THREE.Vector3(
             bldg.pos.x + (Math.random() - 0.5) * bldg.w,
             bldg.groundY + Math.random() * bldg.h,
@@ -2270,7 +2824,6 @@
           );
         }
 
-        // Chain-reaction blast damage to adjacent city buildings
         for (let i = 0; i < activeBuildings.length; i++) {
           const other = activeBuildings[i];
           if (!other.alive || other === bldg) continue;
@@ -2322,15 +2875,14 @@
       }
 
       function damagePlayer(amount) {
+        if (jetState.crashed || jetState.spawnShield > 0) return;
         playerHull = Math.max(0, playerHull - amount);
         hullValueEl.textContent = `${Math.round(playerHull)}%`;
         hitFlashEl.classList.add('active');
         setTimeout(() => hitFlashEl.classList.remove('active'), 140);
 
         if (playerHull <= 0) {
-          playerHull = 100;
-          hullValueEl.textContent = '100%';
-          showRadioAlert('AIRFRAME REPAIRED · BACK IN ACTION');
+          triggerPlayerCrash('AIRFRAME DESTROYED', false);
         }
       }
 
@@ -2354,8 +2906,8 @@
           yaw: heading + Math.PI * 0.65,
           pitch: 0,
           bank: 0,
-          speed: 74 + Math.random() * 12,
-          hp: 24,
+          speed: 68 + Math.random() * 10,
+          hp: 15,
           alive: true,
           maneuverMode: Math.random() > 0.45 ? 'CROSS_IN_FRONT' : 'ORBIT_CIRCLE',
           modeTimer: 4.5 + Math.random() * 3.5,
@@ -2384,14 +2936,12 @@
       }
 
       function updateBots(dt, elapsed) {
-        // Prune destroyed bots
         for (let i = enemyBots.length - 1; i >= 0; i--) {
           if (!enemyBots[i].alive) {
             enemyBots.splice(i, 1);
           }
         }
 
-        // Periodic reinforcement waves (faster if you clear the skies)
         waveTimer -= dt * (enemyBots.length === 0 ? 3.8 : 1.0);
         if (waveTimer <= 0) {
           waveTimer = 12.0;
@@ -2408,7 +2958,6 @@
             bot.modeTimer = 4.2 + Math.random() * 3.2;
           }
 
-          // Cinematic clip-ready dogfight steering: bots deliberately weave & orbit ahead of the player's nose!
           const anchor = jetState.pos.clone().addScaledVector(playerForward, 165);
           let aimPoint;
 
@@ -2431,7 +2980,6 @@
             );
           }
 
-          // If a bot drifts too far behind the player, smoothly vector it back across the player's front cone
           const relToPlayer = bot.pos.clone().sub(jetState.pos);
           if (relToPlayer.length() > 420 || relToPlayer.dot(playerForward) < -40) {
             aimPoint.copy(anchor);
@@ -2471,7 +3019,6 @@
           bot.leftFlame.scale.set(1, flamePulse, 1);
           bot.rightFlame.scale.set(1, flamePulse, 1);
 
-          // Wingtip contrails & discrete dithered exhaust puffs
           const lTip = _v3.copy(bot.pos).addScaledVector(bRight, -4.1).addScaledVector(bForward, -0.4);
           const rTip = _v4.copy(bot.pos).addScaledVector(bRight,  4.1).addScaledVector(bForward, -0.4);
           updateRibbonTrail(bot.leftTrail, lTip, bRight, true);
@@ -2484,9 +3031,8 @@
             spawnPuff(exhaustPos, _v4.set(0, 0.5, 0), 0.72, 2.2, 0.75, 'exhaust');
           }
 
-          // Enemy tracer fire when loosely facing player
           bot.fireCooldown -= dt;
-          if (bot.fireCooldown <= 0) {
+          if (bot.fireCooldown <= 0 && !jetState.crashed) {
             const toPlayer = jetState.pos.clone().sub(bot.pos);
             const dist = toPlayer.length();
             toPlayer.normalize();
@@ -2515,14 +3061,13 @@
 
           let hit = false;
           if (b.fromPlayer) {
-            // Check enemy jets
             for (let j = 0; j < enemyBots.length; j++) {
               const bot = enemyBots[j];
               if (!bot.alive) continue;
-              if (b.mesh.position.distanceToSquared(bot.pos) < 56) {
-                bot.hp -= 12;
+              if (b.mesh.position.distanceToSquared(bot.pos) < 140) {
+                bot.hp -= 10;
                 triggerHitmarker();
-                spawnPuff(b.mesh.position, new THREE.Vector3(0, 3, 0), 1.1, 3.0, 0.45, 'fire');
+                spawnPuff(b.mesh.position, new THREE.Vector3(0, 3, 0), 1.3, 3.4, 0.48, 'fire');
                 if (bot.hp <= 0) {
                   destroyBot(bot);
                 }
@@ -2531,14 +3076,13 @@
               }
             }
 
-            // Check destructible buildings & ships
             if (!hit) {
               for (let k = 0; k < activeBuildings.length; k++) {
                 const bldg = activeBuildings[k];
                 if (!bldg.alive) continue;
                 if (
-                  Math.abs(b.mesh.position.x - bldg.pos.x) < bldg.w * 0.72 + 2.5 &&
-                  Math.abs(b.mesh.position.z - bldg.pos.z) < bldg.d * 0.72 + 2.5 &&
+                  Math.abs(b.mesh.position.x - bldg.pos.x) < bldg.w * 0.75 + 2.8 &&
+                  Math.abs(b.mesh.position.z - bldg.pos.z) < bldg.d * 0.75 + 2.8 &&
                   b.mesh.position.y >= bldg.groundY &&
                   b.mesh.position.y <= bldg.groundY + bldg.h + 3.0
                 ) {
@@ -2554,7 +3098,6 @@
               }
             }
           } else {
-            // Enemy bullet hitting player (automatically evaded while holding R to barrel roll!)
             const isRolling = jetState.rolling || Math.abs(jetState.rollAngle) > 0.12;
             if (!isRolling && b.mesh.position.distanceToSquared(jetState.pos) < 28) {
               damagePlayer(6);
@@ -2575,9 +3118,9 @@
           m.life -= dt;
 
           if (m.target && m.target.alive) {
-            const desired = m.target.pos.clone().sub(m.mesh.position).normalize().multiplyScalar(295);
-            m.vel.lerp(desired, Math.min(1.0, dt * 6.5));
-            m.vel.normalize().multiplyScalar(295);
+            const desired = m.target.pos.clone().sub(m.mesh.position).normalize().multiplyScalar(345);
+            m.vel.lerp(desired, Math.min(1.0, dt * 10.0));
+            m.vel.normalize().multiplyScalar(345);
           }
 
           m.mesh.position.addScaledVector(m.vel, dt);
@@ -2594,7 +3137,7 @@
           for (let j = 0; j < enemyBots.length; j++) {
             const bot = enemyBots[j];
             if (!bot.alive) continue;
-            if (m.mesh.position.distanceToSquared(bot.pos) < 110) {
+            if (m.mesh.position.distanceToSquared(bot.pos) < 240) {
               destroyBot(bot);
               detonated = true;
               break;
@@ -2632,7 +3175,16 @@
         }
       }
 
+      let prevLockedTarget = null;
+
       function updateTargetingHUD() {
+        if (jetState.crashed) {
+          targetLockEl.classList.remove('locked');
+          leadReticleEl.style.display = 'none';
+          offscreenEl.style.display = 'none';
+          return;
+        }
+
         const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(jetGroup.quaternion);
         let bestTarget = null;
         let bestType = null;
@@ -2649,10 +3201,10 @@
             nearestBotDist = dist;
             nearestOffscreenBot = bot;
           }
-          if (dist < 560) {
+          if (dist < 660) {
             const dot = forward.dot(toBot.normalize());
-            if (dot > 0.84) {
-              const score = dot * 100 - dist * 0.05;
+            if (dot > 0.76) {
+              const score = dot * 115 - dist * 0.04;
               if (score > bestScore) {
                 bestScore = score;
                 bestTarget = bot;
@@ -2668,9 +3220,9 @@
             if (!bldg.alive) continue;
             const toBldg = bldg.pos.clone().sub(jetState.pos);
             const dist = toBldg.length();
-            if (dist < 460) {
+            if (dist < 480) {
               const dot = forward.dot(toBldg.normalize());
-              if (dot > 0.89) {
+              if (dot > 0.87) {
                 const score = dot * 85 - dist * 0.05;
                 if (score > bestScore) {
                   bestScore = score;
@@ -2681,6 +3233,11 @@
             }
           }
         }
+
+        if (bestTarget && bestTarget !== prevLockedTarget && bestType === 'bot') {
+          playSoundEffect('lock');
+        }
+        prevLockedTarget = bestTarget;
 
         lockedTarget = bestTarget;
         lockedTargetType = bestType;
@@ -2703,7 +3260,7 @@
 
           if (lockedTargetType === 'bot') {
             const dist = lockedTarget.pos.distanceTo(jetState.pos);
-            const leadPos = lockedTarget.pos.clone().addScaledVector(lockedTarget.vel, dist / 460);
+            const leadPos = lockedTarget.pos.clone().addScaledVector(lockedTarget.vel, dist / 580);
             const lProj = leadPos.project(camera);
             if (lProj.z < 1) {
               leadReticleEl.style.display = 'block';
@@ -2720,7 +3277,6 @@
           leadReticleEl.style.display = 'none';
         }
 
-        // Off-screen directional indicator for nearest bandit
         if (nearestOffscreenBot) {
           const proj = nearestOffscreenBot.pos.clone().project(camera);
           const onScreen = proj.z < 1 && Math.abs(proj.x) <= 0.92 && Math.abs(proj.y) <= 0.92;
@@ -2746,122 +3302,15 @@
         }
       }
 
-      // -----------------------------------------------------------------------
-      // 10. CHROMEBOOK & DESKTOP INPUTS, CURSOR LOCK (L) & FLIGHT PHYSICS
-      // -----------------------------------------------------------------------
-      const reticleEl = document.getElementById('reticle');
-      const reticlePipEl = document.getElementById('reticle-pip');
-      const cockpitHudEl = document.getElementById('cockpit-hud');
-      const hudSpdEl = document.getElementById('hud-spd');
-      const hudAltEl = document.getElementById('hud-alt');
-      const cursorLockLabelEl = document.getElementById('cursor-lock-label');
-
-      const jetState = {
-        pos: new THREE.Vector3(0, 72, 0),
-        yaw: 0,
-        pitch: -0.02,
-        bank: 0,
-        rollAngle: 0,
-        rolling: false,
-        rollSoundCooldown: 0,
-        speed: 88,
-        baseSpeed: 88,
-        boostSpeed: 158,
-        boosting: false,
-        firingGuns: false,
-        cockpitView: false,
-        puffTimer: 0
-      };
-
-      const steerInput = { x: 0, y: 0 };
-      const keysPressed = {};
-      let isCursorLocked = false;
-      let activeTouchId = null;
-
-      // Pre-allocated scratch vectors for zero-GC-lag hot loops
-      const _v1 = new THREE.Vector3();
-      const _v2 = new THREE.Vector3();
-      const _v3 = new THREE.Vector3();
-      const _v4 = new THREE.Vector3();
-      const _euler = new THREE.Euler();
-
-      function updateReticleVisual(clientX, clientY) {
-        if (isCursorLocked) {
-          reticleEl.style.left = '50%';
-          reticleEl.style.top = '50%';
-          if (reticlePipEl) {
-            reticlePipEl.setAttribute('cx', (12 + steerInput.x * 7.5).toFixed(2));
-            reticlePipEl.setAttribute('cy', (12 + steerInput.y * 7.5).toFixed(2));
-          }
-        } else {
-          if (clientX !== undefined && clientY !== undefined) {
-            reticleEl.style.left = `${clientX}px`;
-            reticleEl.style.top = `${clientY}px`;
-          }
-          if (reticlePipEl) {
-            reticlePipEl.setAttribute('cx', '12');
-            reticlePipEl.setAttribute('cy', '12');
-          }
-        }
-      }
-
-      function lockCursor() {
-        isCursorLocked = true;
-        steerInput.x = 0;
-        steerInput.y = 0;
-        container.style.cursor = 'none';
-        if (cursorLockLabelEl) cursorLockLabelEl.textContent = 'UNLOCK CURSOR';
-        updateReticleVisual();
-        if (container.requestPointerLock) {
-          try {
-            const res = container.requestPointerLock();
-            if (res && typeof res.catch === 'function') {
-              res.catch(() => {});
-            }
-          } catch (err) {}
-        }
-      }
-
-      function unlockCursor() {
-        isCursorLocked = false;
-        steerInput.x = 0;
-        steerInput.y = 0;
-        container.style.cursor = 'crosshair';
-        if (cursorLockLabelEl) cursorLockLabelEl.textContent = 'LOCK CURSOR';
-        updateReticleVisual(window.innerWidth * 0.5, window.innerHeight * 0.5);
-        if (document.pointerLockElement === container && document.exitPointerLock) {
-          try {
-            document.exitPointerLock();
-          } catch (err) {}
-        }
-      }
-
-      function toggleCursorLock() {
-        if (isCursorLocked) {
-          unlockCursor();
-        } else {
-          lockCursor();
-        }
-      }
-
-      document.addEventListener('pointerlockchange', () => {
-        if (document.pointerLockElement === container) {
-          isCursorLocked = true;
-          container.style.cursor = 'none';
-          if (cursorLockLabelEl) cursorLockLabelEl.textContent = 'UNLOCK CURSOR';
-        } else if (isCursorLocked) {
-          unlockCursor();
-        }
-      });
-
       function toggleCockpit() {
         jetState.cockpitView = !jetState.cockpitView;
-        jetGroup.visible = !jetState.cockpitView;
+        jetGroup.visible = !jetState.cockpitView && !jetState.crashed;
         cockpitHudEl.classList.toggle('active', jetState.cockpitView);
+        if (guiCockpitEl) guiCockpitEl.classList.toggle('active', jetState.cockpitView);
       }
 
-      // Supports both center-locked relative steering AND unlocked Chromebook trackpad hover steering!
       window.addEventListener('mousemove', (e) => {
+        if (isPaused) return;
         if (isCursorLocked) {
           const sensitivity = 0.0028;
           const dx = e.movementX || 0;
@@ -2880,6 +3329,7 @@
 
       container.addEventListener('mousedown', (e) => {
         initAudio();
+        if (isPaused) return;
         if (e.button === 0) {
           jetState.firingGuns = true;
           firePlayerAutocannon(true);
@@ -2898,6 +3348,28 @@
 
       window.addEventListener('keydown', (e) => {
         initAudio();
+        if (e.code === 'KeyP' || e.code === 'Escape') {
+          e.preventDefault();
+          if (tutorialModalEl.style.display === 'flex') {
+            tutorialModalEl.style.display = 'none';
+            setPaused(false);
+          } else {
+            setPaused(!isPaused);
+          }
+          return;
+        }
+        if (e.code === 'KeyH') {
+          e.preventDefault();
+          if (tutorialModalEl.style.display === 'flex') {
+            tutorialModalEl.style.display = 'none';
+            setPaused(false);
+          } else {
+            openTutorialModal();
+          }
+          return;
+        }
+        if (isPaused) return;
+
         keysPressed[e.code] = true;
         if (e.code === 'KeyL') {
           e.preventDefault();
@@ -2974,7 +3446,23 @@
           }
         }
 
-        // Reload missiles smoothly
+        if (jetState.crashed) {
+          jetState.crashTimer -= dt;
+          if (screenShake > 0) {
+            camera.position.x += (Math.random() - 0.5) * screenShake * 1.8;
+            camera.position.y += (Math.random() - 0.5) * screenShake * 1.8;
+            screenShake = Math.max(0, screenShake - dt * 1.8);
+          }
+          if (jetState.crashTimer <= 0) {
+            redeployJet();
+          }
+          return;
+        }
+
+        if (jetState.spawnShield > 0) {
+          jetState.spawnShield = Math.max(0, jetState.spawnShield - dt);
+        }
+
         for (let i = missileReloadTimers.length - 1; i >= 0; i--) {
           missileReloadTimers[i] -= dt;
           if (missileReloadTimers[i] <= 0) {
@@ -2988,14 +3476,12 @@
         const targetSpeed = jetState.boosting ? jetState.boostSpeed : jetState.baseSpeed;
         jetState.speed += (targetSpeed - jetState.speed) * Math.min(1.0, dt * 3.8);
 
-        // Dynamic FOV speed surge
         const targetFov = jetState.boosting ? 63 : 56;
         if (Math.abs(camera.fov - targetFov) > 0.05) {
           camera.fov += (targetFov - camera.fov) * Math.min(1.0, dt * 4.5);
           camera.updateProjectionMatrix();
         }
 
-        // Gentle virtual stick auto-centering when cursor is center-locked
         if (isCursorLocked && activeTouchId === null) {
           const returnDamping = Math.pow(0.24, dt);
           steerInput.x *= returnDamping;
@@ -3018,6 +3504,10 @@
         const effX = Math.abs(inX) < deadZone ? 0 : (inX - Math.sign(inX) * deadZone) / (1 - deadZone);
         const effY = Math.abs(inY) < deadZone ? 0 : (inY - Math.sign(inY) * deadZone) / (1 - deadZone);
 
+        if (Math.abs(effX) > 0.15 || Math.abs(effY) > 0.15) {
+          completeTutorialStep('steer');
+        }
+
         jetState.yaw -= effX * 1.42 * dt;
         const targetPitch = -effY * 0.72;
         jetState.pitch += (targetPitch - jetState.pitch) * Math.min(1.0, dt * 4.6);
@@ -3025,8 +3515,10 @@
         const targetBank = -effX * 0.88;
         jetState.bank += (targetBank - jetState.bank) * Math.min(1.0, dt * 5.2);
 
-        // Hold R to barrel roll continuously; release R to smoothly finish rotation
         jetState.rolling = !!keysPressed['KeyR'];
+        if (jetState.rolling || jetState.boosting) {
+          completeTutorialStep('roll');
+        }
         if (jetState.rollSoundCooldown > 0) jetState.rollSoundCooldown -= dt;
 
         if (jetState.rolling) {
@@ -3057,34 +3549,58 @@
 
         jetState.pos.addScaledVector(forward, jetState.speed * dt);
 
-        // Smooth terrain & water clearance floor
-        const terrainY = Math.max(0, getTerrainHeight(jetState.pos.x, jetState.pos.z));
-        const minSafeAlt = terrainY + 9.5;
-        if (jetState.pos.y < minSafeAlt) {
-          jetState.pos.y = minSafeAlt;
-          if (jetState.pitch < 0) jetState.pitch *= 0.6;
+        // Crash detection: Ocean water, Ground terrain & Destructible Buildings
+        const rawTerrainY = getTerrainHeight(jetState.pos.x, jetState.pos.z);
+        if (rawTerrainY <= 0.8 && jetState.pos.y <= 1.6) {
+          triggerPlayerCrash('OCEAN IMPACT', true);
+          return;
         }
+        if (rawTerrainY > 0.8 && jetState.pos.y <= rawTerrainY + 2.2) {
+          triggerPlayerCrash('TERRAIN IMPACT', false);
+          return;
+        }
+
+        for (let i = 0; i < activeBuildings.length; i++) {
+          const bldg = activeBuildings[i];
+          if (!bldg.alive) continue;
+          if (
+            Math.abs(jetState.pos.x - bldg.pos.x) < bldg.w * 0.52 + 2.2 &&
+            Math.abs(jetState.pos.z - bldg.pos.z) < bldg.d * 0.52 + 2.2 &&
+            jetState.pos.y >= bldg.groundY - 1.0 &&
+            jetState.pos.y <= bldg.groundY + bldg.h + 1.8
+          ) {
+            destroyBuilding(bldg);
+            triggerPlayerCrash('BUILDING COLLISION', false);
+            return;
+          }
+        }
+
         if (jetState.pos.y > 420) {
           jetState.pos.y = 420;
         }
 
         jetGroup.position.copy(jetState.pos);
 
-        // Animate stabilators
+        // Highlight active controls on the bottom Control GUI
+        const gunsActive = !!(jetState.firingGuns || keysPressed['KeyC'] || keysPressed['Enter']);
+        if (guiSteerEl) guiSteerEl.classList.toggle('active', Math.abs(effX) > 0.08 || Math.abs(effY) > 0.08);
+        if (guiGunsEl) guiGunsEl.classList.toggle('active', gunsActive);
+        if (guiRollEl) guiRollEl.classList.toggle('active', jetState.rolling);
+        if (guiBoostEl) guiBoostEl.classList.toggle('active', jetState.boosting);
+        if (guiCursorEl) guiCursorEl.classList.toggle('active', isCursorLocked);
+
         if (playerBuilt.surfaces) {
           playerBuilt.surfaces.lHStab.rotation.x = effY * 0.28;
           playerBuilt.surfaces.rHStab.rotation.x = effY * 0.28;
         }
 
-        // Twin autocannon firing
         if (gunCooldown > 0) {
           gunCooldown = Math.max(0, gunCooldown - dt);
         }
-        if (jetState.firingGuns || keysPressed['KeyC'] || keysPressed['Enter']) {
+        if (gunsActive) {
           firePlayerAutocannon();
         }
 
-        // Animate twin golden-orange afterburners & rhythmic Bayer-dithered smoke spheres (IMG_1165.PNG)
         const boostScale = jetState.boosting ? 1.55 : 0.92;
         const flicker = 0.88 + Math.random() * 0.28;
         playerBuilt.leftFlame.scale.set(jetState.boosting ? 1.2 : 0.9, boostScale * flicker, jetState.boosting ? 1.2 : 0.9);
@@ -3101,13 +3617,11 @@
           spawnPuff(tailR, drift, jetState.boosting ? 0.95 : 0.72, jetState.boosting ? 2.7 : 2.1, 0.85, 'exhaust');
         }
 
-        // Wingtip contrail ribbons
         const wingL = _v3.copy(jetState.pos).addScaledVector(right, -4.3).addScaledVector(forward, -1.2);
         const wingR = _v4.copy(jetState.pos).addScaledVector(right,  4.3).addScaledVector(forward, -1.2);
         updateRibbonTrail(leftTrail, wingL, right, true);
         updateRibbonTrail(rightTrail, wingR, right, true);
 
-        // Dynamic Web Audio turbine & airflow modulation
         if (audioInitialized && audioCtx) {
           const speedRatio = (jetState.speed - jetState.baseSpeed) / (jetState.boostSpeed - jetState.baseSpeed);
           const now = audioCtx.currentTime;
@@ -3117,7 +3631,6 @@
           engineNoiseGain.gain.setTargetAtTime(0.15 + speedRatio * 0.14, now, 0.08);
         }
 
-        // Camera tracking (3rd-Person Chase vs 1st-Person Cockpit)
         if (jetState.cockpitView) {
           const eyePos = _v3.copy(jetState.pos)
             .addScaledVector(forward, 1.45)
@@ -3143,7 +3656,6 @@
           camera.lookAt(lookTarget);
         }
 
-        // Keep sky, ocean & sun anchored to player for seamless infinite flight
         skyDome.position.copy(jetState.pos);
         waterPlane.position.set(jetState.pos.x, 0, jetState.pos.z);
         waterMat.uniforms.uJetPos.value.copy(jetState.pos);
@@ -3153,11 +3665,112 @@
       }
 
       // -----------------------------------------------------------------------
-      // 11. WINDOW RESIZE, ADAPTIVE CHROMEBOOK FPS SCALER & ANIMATION LOOP
+      // 11. TACTICAL RADAR MINI-MAP, WINDOW RESIZE & ANIMATION LOOP
       // -----------------------------------------------------------------------
+      const minimapCanvas = document.getElementById('minimap-canvas');
+      const minimapCtx = minimapCanvas.getContext('2d');
+      const minimapAltEl = document.getElementById('minimap-alt');
+      const minimapImg = minimapCtx.createImageData(96, 96);
+      let minimapTerrainTimer = 0;
+
+      function updateMinimap(dt) {
+        const size = 96;
+        const half = size * 0.5;
+        const worldScale = 11.5;
+
+        minimapTerrainTimer -= dt;
+        if (minimapTerrainTimer <= 0) {
+          minimapTerrainTimer = 0.16;
+          const data = minimapImg.data;
+          for (let py = 0; py < size; py++) {
+            const wz = jetState.pos.z + (py - half) * worldScale;
+            for (let px = 0; px < size; px++) {
+              const wx = jetState.pos.x + (px - half) * worldScale;
+              const h = getTerrainHeight(wx, wz);
+              const idx = (py * size + px) * 4;
+              if (h < -2.5) {
+                data[idx] = 28; data[idx + 1] = 66; data[idx + 2] = 104;
+              } else if (h < 0.0) {
+                data[idx] = 48; data[idx + 1] = 128; data[idx + 2] = 148;
+              } else if (h < 3.2) {
+                data[idx] = 224; data[idx + 1] = 204; data[idx + 2] = 152;
+              } else if (h < 19.0) {
+                data[idx] = 188; data[idx + 1] = 126; data[idx + 2] = 56;
+              } else {
+                data[idx] = 156; data[idx + 1] = 152; data[idx + 2] = 164;
+              }
+              data[idx + 3] = 235;
+            }
+          }
+        }
+
+        minimapCtx.putImageData(minimapImg, 0, 0);
+
+        minimapCtx.strokeStyle = 'rgba(255, 240, 210, 0.18)';
+        minimapCtx.lineWidth = 1;
+        minimapCtx.beginPath();
+        minimapCtx.arc(half, half, 24, 0, Math.PI * 2);
+        minimapCtx.arc(half, half, 43, 0, Math.PI * 2);
+        minimapCtx.stroke();
+
+        minimapCtx.fillStyle = '#ffb347';
+        for (let i = 0; i < activeBuildings.length; i++) {
+          const b = activeBuildings[i];
+          if (!b.alive) continue;
+          const bx = half + (b.pos.x - jetState.pos.x) / worldScale;
+          const bz = half + (b.pos.z - jetState.pos.z) / worldScale;
+          if (bx >= 2 && bx <= size - 4 && bz >= 2 && bz <= size - 4) {
+            minimapCtx.fillRect(bx - 1, bz - 1, 2.5, 2.5);
+          }
+        }
+
+        for (let i = 0; i < enemyBots.length; i++) {
+          const bot = enemyBots[i];
+          if (!bot.alive) continue;
+          const ex = Math.max(4, Math.min(size - 4, half + (bot.pos.x - jetState.pos.x) / worldScale));
+          const ez = Math.max(4, Math.min(size - 4, half + (bot.pos.z - jetState.pos.z) / worldScale));
+          minimapCtx.save();
+          minimapCtx.translate(ex, ez);
+          minimapCtx.rotate(-bot.yaw);
+          minimapCtx.fillStyle = '#ff5a45';
+          minimapCtx.beginPath();
+          minimapCtx.moveTo(0, -4);
+          minimapCtx.lineTo(3, 3);
+          minimapCtx.lineTo(-3, 3);
+          minimapCtx.closePath();
+          minimapCtx.fill();
+          minimapCtx.restore();
+        }
+
+        minimapCtx.save();
+        minimapCtx.translate(half, half);
+        minimapCtx.rotate(-jetState.yaw);
+        minimapCtx.fillStyle = 'rgba(255, 235, 180, 0.16)';
+        minimapCtx.beginPath();
+        minimapCtx.moveTo(0, 0);
+        minimapCtx.lineTo(-14, -34);
+        minimapCtx.lineTo(14, -34);
+        minimapCtx.closePath();
+        minimapCtx.fill();
+
+        minimapCtx.fillStyle = '#ffffff';
+        minimapCtx.beginPath();
+        minimapCtx.moveTo(0, -5);
+        minimapCtx.lineTo(3.5, 4);
+        minimapCtx.lineTo(0, 2);
+        minimapCtx.lineTo(-3.5, 4);
+        minimapCtx.closePath();
+        minimapCtx.fill();
+        minimapCtx.restore();
+
+        if (minimapAltEl) {
+          minimapAltEl.textContent = `ALT ${Math.max(0, Math.round(jetState.pos.y * 22))}`;
+        }
+      }
+
       function resizeRenderTarget() {
-        rtWidth = Math.max(360, Math.floor(window.innerWidth / pixelScale));
-        rtHeight = Math.max(202, Math.floor(window.innerHeight / pixelScale));
+        rtWidth = Math.max(320, Math.floor(window.innerWidth / pixelScale));
+        rtHeight = Math.max(180, Math.floor(window.innerHeight / pixelScale));
         renderTarget.setSize(rtWidth, rtHeight);
         ditherMaterial.uniforms.uResolution.value.set(rtWidth, rtHeight);
       }
@@ -3165,6 +3778,7 @@
       window.addEventListener('resize', () => {
         const w = window.innerWidth;
         const h = window.innerHeight;
+        pixelScale = computeIdealPixelScale();
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
         renderer.setSize(w, h);
@@ -3181,35 +3795,41 @@
 
         const dt = Math.min(0.05, Math.max(0.001, (now - lastTime) * 0.001));
         lastTime = now;
-        elapsed += dt;
 
-        // Automatic resolution scaling so Chromebooks maintain smooth 60 FPS without lag
-        fpsSampleFrames++;
-        fpsSampleTime += dt;
-        if (fpsSampleTime >= 1.5) {
-          const avgFps = fpsSampleFrames / fpsSampleTime;
-          if (avgFps < 46 && pixelScale < 3.4) {
-            pixelScale = Math.min(3.4, pixelScale + 0.45);
-            resizeRenderTarget();
-          } else if (avgFps > 57 && pixelScale > 2.2) {
-            pixelScale = Math.max(2.2, pixelScale - 0.25);
-            resizeRenderTarget();
+        if (!isPaused) {
+          elapsed += dt;
+
+          const minScale = computeIdealPixelScale();
+          const maxScale = minScale + 0.8;
+          fpsSampleFrames++;
+          fpsSampleTime += dt;
+          if (fpsSampleTime >= 1.5) {
+            const avgFps = fpsSampleFrames / fpsSampleTime;
+            if (avgFps < 44 && pixelScale < maxScale) {
+              pixelScale = Math.min(maxScale, pixelScale + 0.35);
+              resizeRenderTarget();
+            } else if (avgFps > 57 && pixelScale > minScale) {
+              pixelScale = Math.max(minScale, pixelScale - 0.25);
+              resizeRenderTarget();
+            }
+            fpsSampleFrames = 0;
+            fpsSampleTime = 0;
           }
-          fpsSampleFrames = 0;
-          fpsSampleTime = 0;
+
+          skyMat.uniforms.uTime.value = elapsed;
+          waterMat.uniforms.uTime.value = elapsed;
+
+          updateMusicSequencer(dt);
+          updateFlight(dt);
+          updateBots(dt, elapsed);
+          updateBullets(dt);
+          updateMissiles(dt);
+          updatePuffs(dt);
+          updateVoxels(dt);
+          updateShockwaves(dt);
+          updateTargetingHUD();
+          updateMinimap(dt);
         }
-
-        skyMat.uniforms.uTime.value = elapsed;
-        waterMat.uniforms.uTime.value = elapsed;
-
-        updateFlight(dt);
-        updateBots(dt, elapsed);
-        updateBullets(dt);
-        updateMissiles(dt);
-        updatePuffs(dt);
-        updateVoxels(dt);
-        updateShockwaves(dt);
-        updateTargetingHUD();
 
         renderer.setRenderTarget(renderTarget);
         renderer.clear(true, true, true);
